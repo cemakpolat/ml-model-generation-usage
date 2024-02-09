@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  flask-api:
+    build:
+      context: ./backend/
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_RUN_HOST=0.0.0.0
+    networks:
+      - ml_network
+
+  jquery-frontend:
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+        - ./frontend/nginx:/etc/nginx/conf.d
+        - ./frontend/dist:/usr/share/nginx/html
+    depends_on:
+      - flask-api
+    networks:
+      - ml_network
+networks:
+  ml_network:
+    driver: bridge
